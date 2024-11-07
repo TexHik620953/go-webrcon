@@ -1,4 +1,4 @@
-module go-webrcon
+module github.com/TexHik620953/go-webrcon
 
 go 1.22.3
 

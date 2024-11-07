@@ -1,1 +1,1 @@
-# go-webrcon
+# github.com/TexHik620953/go-webrcon

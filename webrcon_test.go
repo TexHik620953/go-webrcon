@@ -3,15 +3,15 @@ package webrcon_test
 import (
 	"context"
 	"fmt"
-	"go-webrcon"
 	"log"
-	"os"
 	"testing"
 	"time"
+
+	"github.com/TexHik620953/go-webrcon"
 )
 
 func Test(t *testing.T) {
-	conn, err := webrcon.Connect(context.Background(), os.Getenv("RCON_ADDR"), os.Getenv("RCON_PWD"))
+	conn, err := webrcon.Connect(context.Background(), "ip-addr:port", "rcon-password")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
