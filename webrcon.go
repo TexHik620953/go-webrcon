@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/TexHik620953/go-webrcon/events"
-	"github.com/TexHik620953/go-webrcon/utils"
 	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/TexHik620953/go-webrcon/events"
+	"github.com/TexHik620953/go-webrcon/utils"
 
 	"github.com/gorilla/websocket"
 )
@@ -76,6 +77,12 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	h.responseMap[h.lastId] = ch
 	packet.Identifier = h.lastId
 	h.responseMapSync.Unlock()
+
+	defer func() {
+		h.responseMapSync.Lock()
+		delete(h.responseMap, h.lastId)
+		h.responseMapSync.Unlock()
+	}()
 
 	err := h.conn.WriteJSON(packet)
 	if err != nil {
