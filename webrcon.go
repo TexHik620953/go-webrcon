@@ -70,7 +70,6 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	}
 
 	ch := make(chan *Message)
-	defer close(ch)
 
 	h.responseMapSync.Lock()
 	h.lastId++
@@ -81,6 +80,7 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	defer func() {
 		h.responseMapSync.Lock()
 		delete(h.responseMap, h.lastId)
+		close(ch)
 		h.responseMapSync.Unlock()
 	}()
 
