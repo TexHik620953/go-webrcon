@@ -80,8 +80,8 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	defer func() {
 		h.responseMapSync.Lock()
 		delete(h.responseMap, h.lastId)
-		close(ch)
 		h.responseMapSync.Unlock()
+		close(ch)
 	}()
 
 	err := h.conn.WriteJSON(packet)
@@ -117,12 +117,13 @@ func (h *WebRconClient) listenWorker() {
 		}
 		h.responseMapSync.Lock()
 		ch, ex := h.responseMap[msg.Identifier]
-		h.responseMapSync.Unlock()
 		// Callback
 		if ex {
 			ch <- msg
+			h.responseMapSync.Unlock()
 			continue
 		}
+		h.responseMapSync.Unlock()
 
 		// Report
 		if msg.Type == MESSAGE_TYPE_REPORT {
