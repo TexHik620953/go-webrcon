@@ -80,8 +80,8 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	defer func() {
 		h.responseMapSync.Lock()
 		delete(h.responseMap, h.lastId)
-		h.responseMapSync.Unlock()
 		close(ch)
+		h.responseMapSync.Unlock()
 	}()
 
 	err := h.conn.WriteJSON(packet)
