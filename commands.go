@@ -1,9 +1,12 @@
 package webrcon
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
-func (h *WebRconClient) ListPlayers() ([]*RconPlayer, error) {
-	resp, err := h.Exec("playerlist")
+func (h *WebRconClient) ListPlayers(execTimeout time.Duration) ([]*RconPlayer, error) {
+	resp, err := h.Exec("playerlist", execTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -15,8 +18,8 @@ func (h *WebRconClient) ListPlayers() ([]*RconPlayer, error) {
 	return data, nil
 }
 
-func (h *WebRconClient) ServerInfo() (*ServerInfo, error) {
-	resp, err := h.Exec("serverinfo")
+func (h *WebRconClient) ServerInfo(execTimeout time.Duration) (*ServerInfo, error) {
+	resp, err := h.Exec("serverinfo", execTimeout)
 	if err != nil {
 		return nil, err
 	}

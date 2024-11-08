@@ -16,8 +16,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var DefaultExecTimeout = time.Second * 10
-
 var ErrTimeout = errors.New("rcon response timeout reached")
 
 type WebRconClient struct {
@@ -62,7 +60,7 @@ func Connect(ctx context.Context, addr string, password string) (*WebRconClient,
 	return h, nil
 }
 
-func (h *WebRconClient) Exec(msg string) (*Message, error) {
+func (h *WebRconClient) Exec(msg string, execTimeout time.Duration) (*Message, error) {
 	h.lastId++
 	packet := &CommandPacket{
 		Message: msg,
@@ -89,7 +87,7 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	}
 
 	select {
-	case <-time.After(DefaultExecTimeout):
+	case <-time.After(execTimeout):
 		return nil, ErrTimeout
 	case result := <-ch:
 		return result, nil
@@ -139,8 +137,9 @@ func (h *WebRconClient) listenWorker() {
 			}
 			continue
 		}
-
 		// Regular message
-		h.emitMessage(msg)
+		if msg.Identifier == 0 {
+			h.emitMessage(msg)
+		}
 	}
 }
