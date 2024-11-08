@@ -69,7 +69,7 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 		Name:    "WebRcon",
 	}
 
-	ch := make(chan *Message)
+	ch := make(chan *Message, 1)
 
 	h.responseMapSync.Lock()
 	h.lastId++
@@ -80,7 +80,6 @@ func (h *WebRconClient) Exec(msg string) (*Message, error) {
 	defer func() {
 		h.responseMapSync.Lock()
 		delete(h.responseMap, h.lastId)
-		close(ch)
 		h.responseMapSync.Unlock()
 	}()
 
@@ -117,13 +116,12 @@ func (h *WebRconClient) listenWorker() {
 		}
 		h.responseMapSync.Lock()
 		ch, ex := h.responseMap[msg.Identifier]
+		h.responseMapSync.Unlock()
 		// Callback
 		if ex {
 			ch <- msg
-			h.responseMapSync.Unlock()
 			continue
 		}
-		h.responseMapSync.Unlock()
 
 		// Report
 		if msg.Type == MESSAGE_TYPE_REPORT {
