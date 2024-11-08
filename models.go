@@ -41,7 +41,7 @@ type Feedback struct {
 	PlayerName string `json:"PlayerName"`
 	Subject    string `json:"Subject"`
 	Message    string `json:"Message"`
-	Type       string `json:"Type"`
+	Type       int    `json:"Type"`
 }
 
 type Report struct {
