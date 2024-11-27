@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"sync"
 	"time"
 
@@ -34,12 +33,11 @@ type WebRconClient struct {
 
 func Connect(ctx context.Context, addr string, password string) (*WebRconClient, error) {
 	dialer := &websocket.Dialer{
-		Proxy:            http.ProxyFromEnvironment,
 		HandshakeTimeout: 45 * time.Second,
 	}
 
 	wsUrl := fmt.Sprintf("ws://%s/%s", addr, password)
-	conn, _, err := websocket.DefaultDialer.DialContext(ctx, wsUrl, nil)
+	conn, _, err := dialer.DialContext(ctx, wsUrl, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -141,5 +139,11 @@ func (h *WebRconClient) listenWorker() {
 		if msg.Identifier == 0 {
 			h.emitMessage(msg)
 		}
+	}
+}
+
+func (h *WebRconClient) Close() {
+	if h.conn != nil {
+		h.conn.Close()
 	}
 }
